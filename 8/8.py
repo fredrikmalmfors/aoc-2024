@@ -1,34 +1,43 @@
 from collections import defaultdict
+from dataclasses import dataclass
 from itertools import combinations
-
 
 with open("input", "r+") as file:
     lines = file.read().splitlines()
 
 
-def in_bounds(y, x):
-    return 0 <= y < len(lines) and 0 <= x < len(lines[0])
+@dataclass(frozen=True)
+class P:
+    y: int
+    x: int
+
+    def __add__(self, o: "P"):
+        return P(self.y + o.y, self.x + o.x)
+
+    def __sub__(self, o: "P"):
+        return P(self.y - o.y, self.x - o.x)
+
+    def in_bounds(self):
+        return 0 <= self.y < len(lines) and 0 <= self.x < len(lines[0])
 
 
-A = defaultdict(list)
+A = defaultdict(list[P])
 for y, line in enumerate(lines):
     for x, ch in enumerate(line):
         if ch != ".":
-            A[ch].append((y, x))
+            A[ch].append(P(y, x))
 
 res = set()
 for ch, ants in A.items():
-    for ta, tb in combinations(ants, 2):
-        ay, ax = ta
-        by, bx = tb
-        day, dax = ay - by, ax - bx
+    for pa, pb in combinations(ants, 2):
+        delta = pa - pb
 
-        while in_bounds(ay, ax):
-            res.add((ay, ax))
-            ay, ax = ay + day, ax + dax
+        while pa.in_bounds():
+            res.add(pa)
+            pa += delta
 
-        while in_bounds(by, bx):
-            res.add((by, bx))
-            by, bx = by - day, bx - dax
+        while pb.in_bounds():
+            res.add(pb)
+            pb -= delta
 
 print(len(res))
