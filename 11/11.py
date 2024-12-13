@@ -20,4 +20,4 @@ def trav(num: int, rm: int):
 
 
 print("part 1:", sum(trav(x, 25) for x in real))
-print("part 2:", sum(trav(x, 75) for x in real))
+print("part 2:", sum(trav(x, 500) for x in real))
